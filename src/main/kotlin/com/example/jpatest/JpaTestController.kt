@@ -9,19 +9,22 @@ class JpaTestController {
 
     @GetMapping("/practice1")
     fun practice1(){
+        // JPA 기능을 가지고 있다 (영속성 컨텍스트)
         val emf = Persistence.createEntityManagerFactory("hello")
         val em = emf.createEntityManager()
 
+        // 비영속 상태
         val member = Member()
-        member.id = 101L
+        member.id = 103L
         member.title = "테스트맨"
 
+        // transaction
         val transaction = em.transaction
         transaction.begin()
 
-        println("BEFORE")
-        em.persist(member)
-        println("AFTER")
+        println("BEFORE")  // before 찍힘
+        em.persist(member) // insert 날라감
+        println("AFTER") // after 찍힘
 
         transaction.commit()
 
@@ -42,19 +45,19 @@ class JpaTestController {
 
         //객체를 생성한 상태(비영속)
         val member = Member()
-        member.id = 101L
+        member.id = 1001L
         member.title = "회원"
 
         val transaction = em.transaction
         transaction.begin()
 
         //1차 캐시에 저장됨
-        em.persist(member)
+        em.persist(member) // insert
 
         //3번 멤버 조회
-        val member1 = em.find(Member().javaClass, 101L)
+        val member1 = em.find(Member().javaClass, 103L)  // select
 
-        println("조회 결과 : " + member1.title)
+        println("조회 결과 : " + member1.title) // println
 
         transaction.commit()
         em.close()
@@ -74,10 +77,10 @@ class JpaTestController {
         val transaction = em.transaction
         transaction.begin()
 
-        //100번 멤버 조회
-        val member1 = em.find(Member().javaClass, 100L)
-        //100번 멤버 조회
-        val member2 = em.find(Member().javaClass, 100L)
+        //103번 멤버 조회
+        val member1 = em.find(Member().javaClass, 103L)
+        //103번 멤버 조회
+        val member2 = em.find(Member().javaClass, 103L)
 
         println("비교 결과 : " + (member1 === member2))
 
@@ -103,10 +106,11 @@ class JpaTestController {
 
 
         val member1 = Member()
-        member1.id = 1000L
+        member1.id = 10000L
         member1.title = "회원님1"
+
         val member2 = Member()
-        member2.id = 1001L
+        member2.id = 10001L
         member2.title = "회원님2"
 
         // 이 때 Insert 쿼리를 보내게 될까?
@@ -132,8 +136,8 @@ class JpaTestController {
         val transaction = em.transaction
         transaction.begin()
 
-        //100번 멤버 조회
-        val member1 = em.find(Member().javaClass, 100L)
+        //103번 멤버 조회
+        val member1 = em.find(Member().javaClass, 103L)
         member1.title = "바뀔까"
 
         transaction.commit()
